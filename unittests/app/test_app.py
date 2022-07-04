@@ -25,7 +25,7 @@ def test_root(app_client):
     json = response.json()
     assert json["message"] == "Hello World"
     # assert json["user"] == os.environ["APP_USER"]
-    assert json["user"] == "colin"
+    assert json["user"] == user
     assert json["password"] == password
 
 
