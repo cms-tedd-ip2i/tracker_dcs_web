@@ -21,7 +21,7 @@ jobs:
         ports:
           - "1883:1883"
         volumes:
-          - ./mosquitto/config:/mosquitto/config
+          - ${{ github.workspace }}/mosquitto/config:/mosquitto/config
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
