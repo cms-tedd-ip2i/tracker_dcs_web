@@ -36,6 +36,6 @@ jobs:
       run: black --check . --exclude _actions
     - name: Test with pytest
       run: |
-        cd tests/unittests
-        coverage run --source=../.. --rcfile=./.coveragerc -m pytest
+        cd unittests
+        coverage run --source=.. --rcfile=./.coveragerc -m pytest
 
