@@ -10,9 +10,8 @@ password = "cms"
 
 
 def test_sensor_data():
-    the_data = [27., 51, 18.1, 40.]
+    the_data = [27.0, 51, 18.1, 40.0]
     _ = SensorData(data=the_data)
-    the_data = [27., 51, 18.1, 40., 33]
+    the_data = [27.0, 51, 18.1, 40.0, 33]
     with pytest.raises(ValidationError):
         _ = SensorData(data=the_data)
-
