@@ -22,4 +22,4 @@ async def upload_data(data: SensorData):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=800, access_log=False, timeout_keep_alive=60)
+    uvicorn.run(app, host="0.0.0.0", port=5000, access_log=False, timeout_keep_alive=60)

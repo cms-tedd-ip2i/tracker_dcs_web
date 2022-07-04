@@ -1,9 +1,12 @@
 import pytest
+
 from fastapi.testclient import TestClient
 from fastapi import status
 
+
 user = "candan"
 password = "cms"
+
 
 @pytest.fixture
 def app_client(monkeypatch):
@@ -23,6 +26,7 @@ def test_root(app_client):
     # assert json["user"] == os.environ["APP_USER"]
     assert json["user"] == user
     assert json["password"] == password
+
 
 def test_data(app_client):
     the_data = [27., 51, 18.1, 40.]

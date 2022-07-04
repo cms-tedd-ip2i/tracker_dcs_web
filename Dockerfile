@@ -20,5 +20,3 @@ RUN pip install -e .
 
 RUN useradd --create-home appuser
 USER appuser
-
-#CMD ["uvicorn", "web_server.app_test:app", "--host", "0.0.0.0", "--port", "80"]
