@@ -12,7 +12,7 @@ password = "cms"
 def app_client(monkeypatch):
     monkeypatch.setenv("APP_USER", user)
     monkeypatch.setenv("APP_PASSWORD", password)
-    from web_server.app import app
+    from tracker_dcs_web.web_server import app
 
     client = TestClient(app)
     yield client
