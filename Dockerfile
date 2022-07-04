@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements/docker.txt
 
 # install this package
 
-COPY web_server ./web_server
+COPY tracker_dcs_web/web_server ./web_server
 COPY setup.py ./
 RUN pip install -e .
 

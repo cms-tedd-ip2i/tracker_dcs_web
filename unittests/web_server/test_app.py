@@ -2,17 +2,12 @@ import pytest
 
 from fastapi.testclient import TestClient
 from fastapi import status
-
-
-user = "candan"
-password = "cms"
+from unittests.fixtures import env
 
 
 @pytest.fixture
-def app_client(monkeypatch):
-    monkeypatch.setenv("APP_USER", user)
-    monkeypatch.setenv("APP_PASSWORD", password)
-    from web_server.app import app
+def app_client(env):
+    from tracker_dcs_web.web_server.app import app
 
     client = TestClient(app)
     yield client
@@ -25,8 +20,8 @@ def test_root(app_client):
     json = response.json()
     assert json["message"] == "Hello World"
     # assert json["user"] == os.environ["APP_USER"]
-    assert json["user"] == user
-    assert json["password"] == password
+    assert json["user"] == "candan"
+    assert json["password"] == "cms"
 
 
 def test_data(app_client):

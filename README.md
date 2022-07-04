@@ -21,9 +21,31 @@ They are not used for authentication, so set them to whatever you want.
 
 * `APP_USER`: app user
 * `APP_PASSWORD`: app password
+* `MQTT_HOST`: mosquitto host, e.g. localhost (don't include the port)
 
-This shows how we can use environment variables in the configuration 
-of the web server. 
+## Docker stack 
+
+To run the unit tests you need an MQTT broker. Start it: 
+
+```commandline
+cd docker/test_tracker_dcs_web
+docker-compose up -d 
+```
+
+## Unit tests and linting 
+
+Black: 
+
+```commandline
+black . --exclude _actions
+```
+
+Unit tests: 
+
+```commandline
+cd unittests
+pytest
+```
 
 ## Running locally
 
