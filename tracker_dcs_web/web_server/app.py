@@ -1,6 +1,6 @@
 from fastapi import FastAPI, status
 import os
-from web_server.data import SensorData
+from tracker_dcs_web.web_server.data import SensorData
 
 app = FastAPI()
 
