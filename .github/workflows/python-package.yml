@@ -32,6 +32,12 @@ jobs:
       run: |
         pip install -r requirements/local.txt
         pip install -e .
+    
+    - name: Docker-compose Build
+      run: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+    - name: Docker-compose list containers
+      run: docker-compose ps
+    
     - name: Run black --check .
       run: black --check . --exclude _actions
     - name: Test with pytest
