@@ -32,6 +32,12 @@ jobs:
       run: |
         pip install -r requirements/local.txt
         pip install -e .
+    
+    - name: Docker-compose start mqtt
+      run: | 
+        cd docker/test_tracker_dcs_web
+        docker-compose up -d 
+        cd -
     - name: Run black --check .
       run: black --check . --exclude _actions
     - name: Test with pytest

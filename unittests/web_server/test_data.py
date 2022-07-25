@@ -1,9 +1,8 @@
 import pytest
 
-from fastapi import status
 from pydantic import ValidationError
 
-from web_server.data import SensorData
+from tracker_dcs_web.web_server.data import SensorData
 
 user = "candan"
 password = "cms"
