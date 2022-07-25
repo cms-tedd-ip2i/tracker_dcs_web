@@ -34,7 +34,7 @@ jobs:
         pip install -e .
     
     - name: Docker-compose Build
-      run: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+      run: docker-compose up -d --build
     - name: Docker-compose list containers
       run: docker-compose ps
     
