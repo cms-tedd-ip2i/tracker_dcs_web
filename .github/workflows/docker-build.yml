@@ -25,5 +25,5 @@ jobs:
             context: .
             file: ./Dockerfile
             push: true
-            tags: ${{ secrets.DOCKER_USERNAME }}/webserver_test:v1
+            tags: ${{ secrets.DOCKER_USERNAME }}/webserver_test:v2
             
