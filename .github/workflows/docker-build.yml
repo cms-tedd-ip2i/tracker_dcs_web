@@ -1,7 +1,7 @@
 name: Docker-Image-Build-Publish
 on:
   push:
-    branches: [dev]
+    branches: [main]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,5 +25,5 @@ jobs:
             context: .
             file: ./Dockerfile
             push: true
-            tags: ${{ secrets.DOCKER_USERNAME }}/webserver_test:v2
+            tags: ${{ secrets.DOCKER_USERNAME }}/tracker_dcs_web:main
             

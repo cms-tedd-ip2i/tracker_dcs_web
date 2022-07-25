@@ -11,11 +11,10 @@ services:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
       - ./mosquitto/config:/mosquitto/config
-  
+
+
 volumes:
   mosquitto_data:
   mosquitto_log:
-  mosquitto.conf:
 
 
-  
