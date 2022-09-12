@@ -2,8 +2,6 @@
 
 Input from outside, e.g. LabView
 
-Remove me 
-
 ## Developer instructions
 
 Local installation: 
