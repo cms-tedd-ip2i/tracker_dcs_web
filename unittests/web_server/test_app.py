@@ -53,11 +53,11 @@ def test_mapping_ok(app_client):
     # 3-column tsv
     # on the first 2 lines, we have 2 pt100 on a dummy module
     the_data = """
-15_10	13_4	42, 28
-15_12	13_5	35,45
+15_10\t13_4\t42, 28
+15_12\t13_5\t35,45
 
-5_1 9_4 0
-5_3	1_2	9
+5_1\t9_4\t0
+5_3\t1_2\t9
 """
     response = app_client.post("/mapping", json={"data": the_data})
     assert response.status_code == status.HTTP_201_CREATED
