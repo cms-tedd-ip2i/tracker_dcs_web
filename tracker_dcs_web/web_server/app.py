@@ -1,6 +1,6 @@
 from fastapi import FastAPI, status
 import os
-from tracker_dcs_web.web_server.data import SensorData
+import tracker_dcs_web.web_server.data as data
 
 app = FastAPI()
 
@@ -15,8 +15,13 @@ async def root():
 
 
 @app.post("/data", status_code=status.HTTP_201_CREATED)
-async def upload_data(data: SensorData):
-    return data.data
+async def upload_data(measurements: data.Sensor):
+    return measurements.data
+
+
+@app.post("/mapping", status_code=status.HTTP_201_CREATED)
+async def upload_mapping(mapping: data.Mapping):
+    return mapping.data
 
 
 if __name__ == "__main__":

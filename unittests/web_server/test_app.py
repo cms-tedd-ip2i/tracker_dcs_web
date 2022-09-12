@@ -35,3 +35,29 @@ def test_wrong_data(app_client):
     the_data = [27.0, 51, 18.1]
     response = app_client.post("/data", json={"data": the_data})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_mapping_bad(app_client):
+    # not enough lines
+    the_data = "foo"
+    response = app_client.post("/mapping", json={"data": the_data})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # not a 3-column tsv
+    the_data = "foo\nbar"
+    response = app_client.post("/mapping", json={"data": the_data})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_mapping_ok(app_client):
+    # 3-column tsv
+    # on the first 2 lines, we have 2 pt100 on a dummy module
+    the_data = """
+15_10	13_4	42, 28
+15_12	13_5	35,45
+
+5_1 9_4 0
+5_3	1_2	9
+"""
+    response = app_client.post("/mapping", json={"data": the_data})
+    assert response.status_code == status.HTTP_201_CREATED
