@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import pathlib
 import pickle
-import re
 from typing import Dict, List
 from tracker_dcs_web.utils.logger import logger
 from tracker_dcs_web.utils.locate import abspath_root
@@ -29,6 +28,17 @@ class Metadata(ABC):
             self._data = self.parse(the_str)
         except ValueError:
             raise
+
+    @staticmethod
+    def skip(line):
+        """Should the line be skipped?
+        could improve this function to remove lines with blank characters,
+        and commented lines. not a priority
+        """
+        if line == "":
+            return True
+        else:
+            return False
 
     @staticmethod
     @abstractmethod

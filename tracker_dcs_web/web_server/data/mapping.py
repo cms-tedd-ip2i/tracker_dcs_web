@@ -6,14 +6,6 @@ from tracker_dcs_web.utils.logger import logger
 from .metadata import Metadata
 
 
-def skip(line):
-    """Should the line be skipped?"""
-    if line == "":
-        return True
-    else:
-        return False
-
-
 @dataclass
 class Sensor:
     slot: str           # sensor slot (true module position)
@@ -44,7 +36,7 @@ class Mapping(Metadata):
             logger.warning(msg)
             raise ValueError(msg)
         for line in lines:
-            if skip(line):
+            if Mapping.skip(line):
                 continue
             fields = re.split("\t", line)
             if len(fields) != 3:
