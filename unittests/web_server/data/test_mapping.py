@@ -1,5 +1,5 @@
 import pytest
-from tracker_dcs_web.web_server.data import Mapping
+from tracker_dcs_web.web_server.data.mapping import Mapping
 
 
 def test_mapping_no_save():
@@ -34,6 +34,9 @@ def test_set_mapping(mapping):
     assert mapping[42].id == 42
     assert mapping[42].slot == "15_10"
     assert mapping[42].dummy_module == "13_4"
+    # this sensor does not exist:
+    with pytest.raises(KeyError):
+        _ = mapping[7]
 
 
 def test_load_mapping(mapping):

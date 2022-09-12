@@ -35,6 +35,9 @@ class Mapping:
         except ValueError:
             raise
 
+    def to_dict(self):
+        return self._data
+
     def __getitem__(self, sensor_id):
         sensor = self._data.get(sensor_id)
         if sensor is None:

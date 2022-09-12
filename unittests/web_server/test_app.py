@@ -4,6 +4,8 @@ from fastapi.testclient import TestClient
 from fastapi import status
 from unittests.fixtures import env
 
+from tracker_dcs_web.web_server.data.mapping import mapping
+
 
 @pytest.fixture
 def app_client(env):
@@ -11,6 +13,7 @@ def app_client(env):
 
     client = TestClient(app)
     yield client
+    mapping.mapping_save_file.unlink()
 
 
 def test_root(app_client):
@@ -59,3 +62,5 @@ def test_mapping_ok(app_client):
 """
     response = app_client.post("/mapping", params={"mapping": the_data})
     assert response.status_code == status.HTTP_201_CREATED
+    mapping = response.json()
+    assert set(mapping.keys()) == {"42", "28", "35", "45", "0", "9"}
