@@ -45,6 +45,7 @@ jobs:
         cd unittests
         pip install pytest-cov
         pytest --cov=./ --cov-report=xml
+        ls
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
