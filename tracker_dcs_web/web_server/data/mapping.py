@@ -41,15 +41,15 @@ class Mapping(Metadata):
         mapping_dict = {}
         if len(lines) < n_lines_min:
             msg = f"Mapping must have at least {n_lines_min} lines"
-            logger.error(msg)
-            raise ValueError(f"Mapping must have at least {n_lines_min} lines")
+            logger.warning(msg)
+            raise ValueError(msg)
         for line in lines:
             if skip(line):
                 continue
             fields = re.split("\t", line)
             if len(fields) != 3:
                 msg = f"Mapping file must be a tab separated file with 3 columns"
-                logger.error(msg)
+                logger.warning(msg)
                 raise ValueError(msg)
             slot, dummy_module, sensor_id = fields
             sensor_ids = re.split(r"\s*,\s*", sensor_id)
