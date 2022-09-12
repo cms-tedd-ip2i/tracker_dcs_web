@@ -25,7 +25,9 @@ def mapping():
 
 
 def test_set_mapping(mapping):
+    # all sensors found
     assert {42, 28, 35, 45, 0, 9} == set(mapping._data.keys())
+    # sensors 42 and 28 have the same mapping
     assert mapping[28].id == 28
     assert mapping[28].slot == "15_10"
     assert mapping[28].dummy_module == "13_4"
