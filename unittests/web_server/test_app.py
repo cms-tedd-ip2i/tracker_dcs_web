@@ -32,7 +32,7 @@ def test_data(app_client):
     the_data = "27.0\t51\t18.1"
     response = app_client.post("/data", params={"measurements": the_data})
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == ["27.0", "51", "18.1"]
+    assert response.json() == None
 
 
 def test_wrong_data(app_client):
