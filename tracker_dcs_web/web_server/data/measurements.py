@@ -6,14 +6,21 @@ from .metadata import Metadata
 
 
 class Measurements(Metadata):
+    """Measurements table, which includes the header and the measured values
+    as a function of time.
+
+    The header is saved to disk, and loaded back automatically at startup.
+    The values are not saved
+    """
     def __init__(self, save_file: pathlib.Path = None):
         super().__init__("header.pck", save_file)
 
-    def to_list(self):
+    def to_list(self) -> List:
+        """Returns measurements as a list"""
         return self._data
 
     @staticmethod
-    def parse(the_str: str) -> List[float]:
+    def parse(the_str: str) -> List:
         lines = the_str.splitlines()
         if len(lines) != 1:
             msg = "Must send exactly one line"

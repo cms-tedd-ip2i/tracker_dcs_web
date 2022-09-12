@@ -16,26 +16,23 @@ def skip(line):
 
 @dataclass
 class Sensor:
-    slot: str
-    dummy_module: str
-    id: int
+    slot: str           # sensor slot (true module position)
+    dummy_module: str   # heating device identifier
+    id: int             # pt100 id
 
 
 class Mapping(Metadata):
+    """Mapping information
+
+    It is saved to disk and loaded back automatically at startup
+    """
+
     def __init__(self, save_file: pathlib.Path = None):
         super().__init__("mapping.pck", save_file)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[int, Sensor]:
+        """Returns mapping as a dictionary"""
         return self._data
-
-    #
-    # def __getitem__(self, sensor_id):
-    #     sensor = self._data.get(sensor_id)
-    #     if sensor is None:
-    #         msg = f"no such sensor: {sensor_id}"
-    #         logger.warning(msg)
-    #         raise KeyError(msg)
-    #     return sensor
 
     @staticmethod
     def parse(mapping_str: str) -> Dict[int, Sensor]:
