@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from fastapi import status
 from unittests.fixtures import env
 
-from tracker_dcs_web.web_server.data.mapping import mapping
+from tracker_dcs_web.web_server.data import mapping, measurements
 
 
 @pytest.fixture
@@ -13,7 +13,11 @@ def app_client(env):
 
     client = TestClient(app)
     yield client
-    mapping.mapping_save_file.unlink()
+    try:
+        mapping.save_file.unlink()
+        measurements.save_file.unlink()
+    except FileNotFoundError:
+        pass
 
 
 def test_root(app_client):
@@ -26,27 +30,27 @@ def test_root(app_client):
 
 def test_data(app_client):
     the_data = "27.0\t51\t18.1"
-    response = app_client.post("/data", json={"data": the_data})
+    response = app_client.post("/data", params={"measurements": the_data})
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == the_data
+    assert response.json() == ["27.0", "51", "18.1"]
 
 
 def test_wrong_data(app_client):
     # more than one line is not accepted
     the_data = "27.0\t51\t18.1\nfoo"
-    response = app_client.post("/data", json={"data": the_data})
+    response = app_client.post("/data", params={"measurements": the_data})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_mapping_bad(app_client):
     # not enough lines
     the_data = "foo"
-    response = app_client.post("/mapping", json={"data": the_data})
+    response = app_client.post("/mapping", params={"mapping": the_data})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     # not a 3-column tsv
     the_data = "foo\nbar"
-    response = app_client.post("/mapping", json={"data": the_data})
+    response = app_client.post("/mapping", params={"mapping": the_data})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 

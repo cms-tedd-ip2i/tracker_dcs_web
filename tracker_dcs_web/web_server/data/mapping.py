@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 import pathlib
-import pickle
 import re
 from typing import Dict
 from tracker_dcs_web.utils.logger import logger
-from tracker_dcs_web.utils.locate import abspath_root
+from .metadata import Metadata
 
 
 def skip(line):
@@ -22,35 +21,24 @@ class Sensor:
     id: int
 
 
-class Mapping:
-    def __init__(self, mapping_save_file: pathlib.Path = None):
-        if mapping_save_file is None:
-            mapping_save_file = abspath_root() / "mapping.pck"
-        self.mapping_save_file = mapping_save_file
-        self._data = self.load()
-
-    def set(self, mapping_str: str):
-        try:
-            self._data = self.parse_mapping(mapping_str)
-        except ValueError:
-            raise
+class Mapping(Metadata):
+    def __init__(self, save_file: pathlib.Path = None):
+        super().__init__("mapping.pck", save_file)
 
     def to_dict(self):
         return self._data
 
-    def __getitem__(self, sensor_id):
-        sensor = self._data.get(sensor_id)
-        if sensor is None:
-            msg = f"no such sensor: {sensor_id}"
-            logger.warning(msg)
-            raise KeyError(msg)
-        return sensor
-
-    def __eq__(self, other):
-        return self._data == other._data
+    #
+    # def __getitem__(self, sensor_id):
+    #     sensor = self._data.get(sensor_id)
+    #     if sensor is None:
+    #         msg = f"no such sensor: {sensor_id}"
+    #         logger.warning(msg)
+    #         raise KeyError(msg)
+    #     return sensor
 
     @staticmethod
-    def parse_mapping(mapping_str: str) -> Dict[int, Sensor]:
+    def parse(mapping_str: str) -> Dict[int, Sensor]:
         lines = mapping_str.splitlines()
         n_lines_min = 2
         mapping_dict = {}
@@ -74,22 +62,6 @@ class Mapping:
                     id=sensor_id, slot=slot, dummy_module=dummy_module
                 )
         return mapping_dict
-
-    def save(self):
-        """Save mapping dictionary to pickle file"""
-        with open(self.mapping_save_file, "wb") as ifile:
-            pickle.dump(self._data, ifile)
-
-    def load(self) -> [Dict, None]:
-        """Load mapping dictionary from pickle file"""
-        try:
-            with open(self.mapping_save_file, "rb") as ifile:
-                data = pickle.load(ifile)
-        except FileNotFoundError:
-            logger.warning("cannot find mapping save file, no mapping yet !")
-            return None
-        else:
-            return data
 
 
 mapping = Mapping()

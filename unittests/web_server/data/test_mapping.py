@@ -21,7 +21,7 @@ def mapping():
     )
     mapping.save()
     yield mapping
-    mapping.mapping_save_file.unlink()
+    mapping.save_file.unlink()
 
 
 def test_set_mapping(mapping):
