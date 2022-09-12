@@ -12,6 +12,7 @@ class Measurements(Metadata):
     The header is saved to disk, and loaded back automatically at startup.
     The values are not saved
     """
+
     def __init__(self, save_file: pathlib.Path = None):
         super().__init__("header.pck", save_file)
         self.values = None

@@ -12,11 +12,10 @@ def test_bad_measurements_line():
 def test_measured_values():
     assert measurements.values is None
     measurements.set("1.\t2.\t3.")
-    assert measurements.values == [1., 2., 3.]
+    assert measurements.values == [1.0, 2.0, 3.0]
     assert measurements._data is None
 
 
 def test_header():
     measurements.set("A\tB\tC")
     assert measurements._data == ["A", "B", "C"]
-

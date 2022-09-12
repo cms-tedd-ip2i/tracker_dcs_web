@@ -8,9 +8,9 @@ from .metadata import Metadata
 
 @dataclass
 class Sensor:
-    slot: str           # sensor slot (true module position)
-    dummy_module: str   # heating device identifier
-    id: int             # pt100 id
+    slot: str  # sensor slot (true module position)
+    dummy_module: str  # heating device identifier
+    id: int  # pt100 id
 
 
 class Mapping(Metadata):
