@@ -23,12 +23,12 @@ def test_root(app_client):
     assert json["user"] == "candan"
     assert json["password"] == "cms"
 
-#
-# def test_data(app_client):
-#     the_data = [27.0, 51, 18.1, 40.0]
-#     response = app_client.post("/data", json={"data": the_data})
-#     assert response.status_code == status.HTTP_201_CREATED
-#     assert response.json() == the_data
+
+def test_data(app_client):
+    the_data = [27.0, 51, 18.1, 40.0]
+    response = app_client.post("/data", json={"data": the_data})
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json() == the_data
 
 
 def test_wrong_data(app_client):
