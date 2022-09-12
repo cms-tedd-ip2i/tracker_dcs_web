@@ -14,13 +14,16 @@ class Measurements(Metadata):
     """
     def __init__(self, save_file: pathlib.Path = None):
         super().__init__("header.pck", save_file)
+        self.values = None
 
     def to_list(self) -> List:
         """Returns measurements as a list"""
         return self._data
 
-    @staticmethod
-    def parse(the_str: str) -> List:
+    def parse_header(self, values: List[str]):
+        return values
+
+    def parse(self, the_str: str) -> [List, None]:
         lines = the_str.splitlines()
         if len(lines) != 1:
             msg = "Must send exactly one line"
@@ -31,7 +34,19 @@ class Measurements(Metadata):
             msg = "Must send tab-separated values"
             logger.warning(msg)
             raise ValueError(msg)
-        return values
+        float_values = []
+        is_header = False
+        for value in values:
+            try:
+                float_values.append(float(value))
+            except ValueError:
+                is_header = True
+                break
+        if is_header:
+            return self.parse_header(values)
+        else:
+            self.values = float_values
+            return None
 
 
 measurements = Measurements()

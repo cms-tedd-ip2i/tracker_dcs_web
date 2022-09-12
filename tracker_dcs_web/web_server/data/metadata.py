@@ -40,9 +40,8 @@ class Metadata(ABC):
         else:
             return False
 
-    @staticmethod
     @abstractmethod
-    def parse(the_str: str):
+    def parse(self, the_str: str):
         ...
 
     def save(self):

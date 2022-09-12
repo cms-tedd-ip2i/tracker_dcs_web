@@ -26,8 +26,7 @@ class Mapping(Metadata):
         """Returns mapping as a dictionary"""
         return self._data
 
-    @staticmethod
-    def parse(mapping_str: str) -> Dict[int, Sensor]:
+    def parse(self, mapping_str: str) -> Dict[int, Sensor]:
         lines = mapping_str.splitlines()
         n_lines_min = 2
         mapping_dict = {}
