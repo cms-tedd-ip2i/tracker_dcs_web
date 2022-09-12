@@ -18,10 +18,7 @@ def test_root(app_client):
     response = app_client.get("/")
     assert response.status_code == status.HTTP_200_OK
     json = response.json()
-    assert json["message"] == "Hello World"
-    # assert json["user"] == os.environ["APP_USER"]
-    assert json["user"] == "candan"
-    assert json["password"] == "cms"
+    assert json["message"].startswith("Tracker DCS")
 
 
 def test_data(app_client):
@@ -60,5 +57,5 @@ def test_mapping_ok(app_client):
 5_1\t9_4\t0
 5_3\t1_2\t9
 """
-    response = app_client.post("/mapping", json={"data": the_data})
+    response = app_client.post("/mapping", params={"mapping": the_data})
     assert response.status_code == status.HTTP_201_CREATED

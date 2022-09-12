@@ -1,2 +1,2 @@
-from .mapping import Mapping, MappingHelper
+from .mapping import Mapping
 from .sensor import Sensor

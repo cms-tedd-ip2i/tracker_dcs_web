@@ -1,12 +1,10 @@
+from dataclasses import dataclass
 import pathlib
-
-from pydantic import BaseModel, validator
 import pickle
 import re
 from typing import Dict
-
-from tracker_dcs_web.utils.locate import abspath_root
 from tracker_dcs_web.utils.logger import logger
+from tracker_dcs_web.utils.locate import abspath_root
 
 
 def skip(line):
@@ -17,14 +15,40 @@ def skip(line):
         return False
 
 
-class Mapping(BaseModel):
-    """Mapping input"""
+@dataclass
+class Sensor:
+    slot: str
+    dummy_module: str
+    id: int
 
-    data: str
 
-    @validator("data")
-    def validate_data(cls, v: str):
-        lines = v.splitlines()
+class Mapping:
+    def __init__(self, mapping_save_file: pathlib.Path = None):
+        if mapping_save_file is None:
+            mapping_save_file = abspath_root() / "mapping.pck"
+        self.mapping_save_file = mapping_save_file
+        self._data = self.load()
+
+    def set(self, mapping_str: str):
+        try:
+            self._data = self.parse_mapping(mapping_str)
+        except ValueError:
+            raise
+
+    def __getitem__(self, sensor_id):
+        sensor = self._data.get(sensor_id)
+        if sensor is None:
+            msg = f"no such sensor: {sensor_id}"
+            logger.warning(msg)
+            raise KeyError(msg)
+        return sensor
+
+    def __eq__(self, other):
+        return self._data == other._data
+
+    @staticmethod
+    def parse_mapping(mapping_str: str) -> Dict[int, Sensor]:
+        lines = mapping_str.splitlines()
         n_lines_min = 2
         mapping_dict = {}
         if len(lines) < n_lines_min:
@@ -39,51 +63,30 @@ class Mapping(BaseModel):
                 msg = f"Mapping file must be a tab separated file with 3 columns"
                 logger.error(msg)
                 raise ValueError(msg)
-        return v
-
-
-class SensorMapping(BaseModel):
-    slot: str
-    dummy_module: str
-
-
-class MappingDict(BaseModel):
-    data: Dict[int, SensorMapping]
-
-
-class MappingHelper:
-
-    mapping_save_file = abspath_root() / "mapping.pck"
-
-    @staticmethod
-    def parse_mapping(mapping: Mapping) -> MappingDict:
-        """Turn the original mapping string into a dictionary data structure"""
-        lines = mapping.data.splitlines()
-        mapping_dict = {}
-        for line in lines:
-            if skip(line):
-                continue
-            fields = re.split("\t", line)
-            assert len(fields) == 3
             slot, dummy_module, sensor_id = fields
-            # several sensors can be attached to the same dummy module,
-            # in which case they are specified as a comma separated list
-            sensor_ids = re.split("\s*,\s*", sensor_id)
+            sensor_ids = re.split(r"\s*,\s*", sensor_id)
             for sensor_id in sensor_ids:
                 sensor_id = int(sensor_id)
-                mapping_dict[sensor_id] = SensorMapping(
-                    slot=slot, dummy_module=dummy_module
+                mapping_dict[sensor_id] = Sensor(
+                    id=sensor_id, slot=slot, dummy_module=dummy_module
                 )
-        return MappingDict(data=mapping_dict)
+        return mapping_dict
 
-    @classmethod
-    def save_mapping(cls, mapping: MappingDict) -> pathlib.Path:
-        with open(cls.mapping_save_file, "wb") as ifile:
-            pickle.dump(mapping, ifile)
-        return cls.mapping_save_file
+    def save(self):
+        """Save mapping dictionary to pickle file"""
+        with open(self.mapping_save_file, "wb") as ifile:
+            pickle.dump(self._data, ifile)
 
-    @classmethod
-    def load_mapping(cls) -> MappingDict:
-        with open(cls.mapping_save_file, "rb") as ifile:
-            mapping = pickle.load(ifile)
-        return mapping
+    def load(self) -> [Dict, None]:
+        """Load mapping dictionary from pickle file"""
+        try:
+            with open(self.mapping_save_file, "rb") as ifile:
+                data = pickle.load(ifile)
+        except FileNotFoundError:
+            logger.warning("cannot find mapping save file, no mapping yet !")
+            return None
+        else:
+            return data
+
+
+mapping = Mapping()

@@ -8,9 +8,7 @@ app = FastAPI()
 @app.get("/")
 async def root():
     return {
-        "message": "Hello World",
-        "user": os.environ["APP_USER"],
-        "password": os.environ["APP_PASSWORD"],
+        "message": "Tracker DCS Web Server for data ingestion",
     }
 
 
@@ -20,8 +18,8 @@ async def upload_data(measurements: data.Sensor):
 
 
 @app.post("/mapping", status_code=status.HTTP_201_CREATED)
-async def upload_mapping(mapping: data.Mapping):
-    return mapping.data
+async def post_mapping(mapping: str):
+    return mapping
 
 
 if __name__ == "__main__":
