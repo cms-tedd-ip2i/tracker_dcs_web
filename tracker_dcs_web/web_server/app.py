@@ -45,4 +45,4 @@ async def post_mapping(mapping: str):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=3000, access_log=False, timeout_keep_alive=60)
+    uvicorn.run(app, host="0.0.0.0", port=300, access_log=False, timeout_keep_alive=60)
