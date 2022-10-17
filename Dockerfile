@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements/docker.txt
 COPY tracker_dcs_web/ ./tracker_dcs_web/
 COPY setup.py ./
 RUN pip install -e .
-
+#ENV PYTHONPATH /code
 # create user
 
 RUN useradd --create-home appuser
