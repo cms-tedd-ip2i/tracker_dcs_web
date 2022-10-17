@@ -2,7 +2,7 @@ from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 import os
 import web_server.data as data
-from tracker_dcs_web.utils.logger import logger
+from utils.logger import logger
 
 app = FastAPI()
 
