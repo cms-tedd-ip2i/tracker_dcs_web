@@ -24,7 +24,6 @@ async def upload_data(measurements: str):
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=message
         )
-    data.measurements.save()
     return data.measurements.to_list()
 
 
@@ -38,7 +37,6 @@ async def post_mapping(mapping: str):
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=message
         )
-    data.mapping.save()
     return data.mapping.to_dict()
 
 

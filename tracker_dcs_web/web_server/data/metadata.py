@@ -20,7 +20,7 @@ class Metadata(ABC):
         try:
             return self._data[item]
         except KeyError as err:
-            logger.warning(err)
+            logger.warning(f"Key {err} cannot be found")
             raise
 
     def set(self, the_str: str):
@@ -28,6 +28,8 @@ class Metadata(ABC):
             self._data = self.parse(the_str)
         except ValueError:
             raise
+        if self._data:
+            self.save()
 
     @staticmethod
     def skip(line):
@@ -46,6 +48,7 @@ class Metadata(ABC):
 
     def save(self):
         """Save mapping dictionary to pickle file"""
+        logger.info(f"saving to {self.save_file.name}")
         with open(self.save_file, "wb") as ifile:
             pickle.dump(self._data, ifile)
 
@@ -55,7 +58,7 @@ class Metadata(ABC):
             with open(self.save_file, "rb") as ifile:
                 data = pickle.load(ifile)
         except FileNotFoundError:
-            logger.warning("cannot find mapping save file, no mapping yet !")
+            logger.info("cannot find save file")
             return None
         else:
             return data
