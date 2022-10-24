@@ -73,6 +73,7 @@ class Measurements:
                 pdf[col] = pd.to_numeric(pdf[col])
 
     def columns(self) -> List:
+        """Return list of columns"""
         return self._header.columns.to_list()
 
     def records(self) -> [Dict, None]:
