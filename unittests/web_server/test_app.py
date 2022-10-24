@@ -13,11 +13,8 @@ def app_client(env):
 
     client = TestClient(app)
     yield client
-    try:
-        mapping.save_file.unlink()
-        measurements.save_file.unlink()
-    except FileNotFoundError:
-        pass
+    mapping.save_file.unlink(missing_ok=True)
+    measurements.save_file.unlink(missing_ok=True)
 
 
 def test_root(app_client):
@@ -28,14 +25,59 @@ def test_root(app_client):
     assert json["message"].startswith("Tracker DCS")
 
 
-def test_data(app_client):
-    the_data = "27.0\t51\t18.1"
+def test_header_bad(app_client):
+
+    # bad header
+    the_data = "Date\tfoo"
+    response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_header_good(app_client):
+    # good header
+    the_data = "Date\tH:M:S\tSensor"
     response = app_client.post("/data", params={"measurements": the_data})
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == None
+    cols = response.json()
+    assert cols == ["Date", "H:M:S", "Sensor"]
+
+    # change header
+    the_data = "Date\tH:M:S\tSensor_1\tSensor_2"
+    response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_201_CREATED
+    cols = response.json()
+    assert cols == ["Date", "H:M:S", "Sensor_1", "Sensor_2"]
 
 
-def test_wrong_data(app_client):
+def test_data(app_client):
+    header = "Date\tH:M:S\tSensor"
+    response = app_client.post("/data", params={"measurements": header})
+    assert response.status_code == status.HTTP_201_CREATED
+
+    # Bad date / time format
+    the_data = "\t".join(["1", "2", "3"])
+    response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # Wrong number of values
+    the_data = "\t".join(["1", "2"])
+    response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # Not a numeric
+    the_data = "\t".join(["24/10/2022", "07:30:29", "foo"])
+    response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # ok
+    the_data = "\t".join(["24/10/2022", "07:30:29", "1."])
+    response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_201_CREATED
+    records = response.json()
+    assert records == {"Sensor": 1.0, "Datetime_ns": 1666596629000000000}
+
+
+def test_too_many_lines(app_client):
     # more than one line is not accepted
     the_data = "27.0\t51\t18.1\nfoo"
     response = app_client.post("/data", params={"measurements": the_data})

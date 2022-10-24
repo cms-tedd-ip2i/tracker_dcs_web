@@ -24,7 +24,11 @@ async def upload_data(measurements: str):
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=message
         )
-    return data.measurements.to_list()
+    records = data.measurements.records()
+    if records:
+        return records
+    else:
+        return data.measurements.columns()
 
 
 @app.post("/mapping", status_code=status.HTTP_201_CREATED)
