@@ -2,11 +2,6 @@ import pytest
 from tracker_dcs_web.web_server.data.mapping import Mapping
 
 
-def test_mapping_no_save():
-    mapping = Mapping()
-    assert mapping._data is None
-
-
 @pytest.fixture()
 def mapping():
     mapping = Mapping()
@@ -19,7 +14,6 @@ def mapping():
 5_3\t1_2\t9
 """
     )
-    mapping.save()
     yield mapping
     mapping.save_file.unlink()
 

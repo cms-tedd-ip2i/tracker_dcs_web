@@ -1,53 +1,87 @@
+import pandas as pd
 import pathlib
-import re
-from typing import List
+from tracker_dcs_web.utils.locate import abspath_root
 from tracker_dcs_web.utils.logger import logger
-from .metadata import Metadata
+from typing import Dict, List
 
 
-class Measurements(Metadata):
-    """Measurements table, which includes the header and the measured values
-    as a function of time.
+class Measurements:
+    def __init__(self):
+        self.save_file = abspath_root() / "header.csv"
+        self._header = self.load()
+        self._data = None
 
-    The header is saved to disk, and loaded back automatically at startup.
-    The values are not saved
-    """
-
-    def __init__(self, save_file: pathlib.Path = None):
-        super().__init__("header.pck", save_file)
-        self.values = None
-
-    def to_list(self) -> List:
-        """Returns measurements as a list"""
-        return self._data
-
-    def parse_header(self, values: List[str]):
-        return values
-
-    def parse(self, the_str: str) -> [List, None]:
-        lines = the_str.splitlines()
-        if len(lines) != 1:
-            msg = "Must send exactly one line"
-            logger.warning(msg)
-            raise ValueError(msg)
-        values = re.split(f"\s*\t\s*", the_str)
-        if len(values) < 2:
-            msg = "Must send tab-separated values"
-            logger.warning(msg)
-            raise ValueError(msg)
-        float_values = []
-        is_header = False
-        for value in values:
-            try:
-                float_values.append(float(value))
-            except ValueError:
-                is_header = True
-                break
-        if is_header:
-            return self.parse_header(values)
-        else:
-            self.values = float_values
+    def load(self) -> [pd.DataFrame, None]:
+        """Load header dataframe from save file if it exists"""
+        if not self.save_file.exists():
+            logger.info("cannot find measurements header save file")
             return None
+        df = pd.read_csv(self.save_file)
+        return df
+
+    def save(self):
+        """Save header dataframe to save file"""
+        logger.info(f"saving measurements header to {self.save_file.name}")
+        self._header.to_csv(self.save_file, index=False)
+
+    def set(self, the_str: str):
+        """Set header or data line
+
+        :param the_str: tab separated values.
+        """
+        the_str = the_str.strip()
+        n_lines = len(the_str.split("\n"))
+        if n_lines > 1:
+            raise ValueError("Send only one line")
+        values = the_str.strip().split("\t")
+        if self._header is None or "Date" in values:
+            header = pd.DataFrame(columns=values)
+            if not header.empty:
+                raise ValueError("header not empty!")
+            if not {"Date", "H:M:S"}.issubset(set(header.columns)):
+                raise ValueError("Columns Date and H:M:S must be provided")
+            self._header = header
+            self.save()
+        else:
+            try:
+                self._data = pd.DataFrame(data=[values], columns=self._header.columns)
+            except ValueError:
+                logger.error("data does not match header:")
+                logger.error(
+                    f"columns: {len(self._header.columns)} {list(self._header.columns)}"
+                )
+                logger.error(f"values : {len(values)} {values}")
+                raise
+
+            # parse time
+
+            pdf = self._data
+            try:
+                pdf["Datetime_ns"] = pd.to_datetime(
+                    pdf["Date"] + " " + pdf["H:M:S"], format="%d/%m/%Y %H:%M:%S"
+                )
+            except KeyError:
+                logger.error("Columns Date and H:M:S must be provided")
+                raise
+            else:
+                pdf.drop(
+                    columns=["Times[s]", "Date", "H:M:S"], inplace=True, errors="ignore"
+                )
+
+            # convert to numeric
+            for col in pdf.columns:
+                pdf[col] = pd.to_numeric(pdf[col])
+
+    def columns(self) -> List:
+        """Return list of columns"""
+        return self._header.columns.to_list()
+
+    def records(self) -> [Dict, None]:
+        """Return json representation of the current data"""
+        if self._data is not None:
+            return self._data.to_dict(orient="records")[0]
+        else:
+            return {}
 
 
 measurements = Measurements()
