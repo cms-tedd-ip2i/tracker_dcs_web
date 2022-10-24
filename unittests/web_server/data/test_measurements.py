@@ -61,8 +61,6 @@ def test_good_data(mheader, dataline):
     assert "H:M:S" not in mheader._data.columns
 
     data = mheader.records()
-    assert len(data) == 1
-    data = data[0]
     assert len(data) == 67  # 69 - 3 (time - Data - H:M:S) + 1 (Datetime_ns)
     assert "0 (PS)" in data
     assert data["0 (PS)"] == 25.220262
