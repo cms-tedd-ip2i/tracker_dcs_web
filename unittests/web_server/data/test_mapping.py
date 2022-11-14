@@ -42,8 +42,11 @@ def test_mapping_bad():
     # not enough lines
     mapping = Mapping()
 
-    # not a 3-column tsv
+    # not enough lines
     with pytest.raises(ValueError):
-        mapping.set("foo\t\bar\t\baz\t\gee")
+        mapping.set("foo\t\bar\t10")
+    # must have 3 columns
     with pytest.raises(ValueError):
-        mapping.set("foo\n\bar")
+        mapping.set("foo\nbar")
+    with pytest.raises(ValueError):
+        mapping.set("foo\t\bar\tbaz\na\tb\tc")

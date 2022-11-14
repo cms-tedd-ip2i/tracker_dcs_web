@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, File, UploadFile
 from fastapi.responses import JSONResponse
 import os
 import tracker_dcs_web.web_server.data as data
@@ -31,8 +31,29 @@ async def upload_data(measurements: str):
         return data.measurements.columns()
 
 
-@app.post("/mapping", status_code=status.HTTP_201_CREATED)
-async def post_mapping(mapping: str):
+# @app.post("/mapping", status_code=status.HTTP_201_CREATED)
+# async def post_mapping(mapping: str):
+#     try:
+#         data.mapping.set(mapping)
+#     except ValueError as err:
+#         message = str(err)
+#         logger.warning(err)
+#         return JSONResponse(
+#             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=message
+#         )
+#     return data.mapping.to_dict()
+#
+
+@app.post(
+    "/mapping",
+    status_code=status.HTTP_201_CREATED,
+)
+async def post_mapping(
+    upload_file: UploadFile = File(...)
+):
+    mapping = upload_file.file.read().decode("utf8")
+    logger.debug("set mapping")
+    logger.debug(mapping)
     try:
         data.mapping.set(mapping)
     except ValueError as err:

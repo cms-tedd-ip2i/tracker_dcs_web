@@ -45,7 +45,12 @@ class Mapping(Metadata):
             slot, dummy_module, sensor_id = fields
             sensor_ids = re.split(r"\s*,\s*", sensor_id)
             for sensor_id in sensor_ids:
-                sensor_id = int(sensor_id)
+                try:
+                    sensor_id = int(sensor_id)
+                except ValueError as err:
+                    raise ValueError(
+                        "your last column must contain integers (sensor ids)"
+                    ) from err
                 mapping_dict[sensor_id] = Sensor(
                     id=sensor_id, slot=slot, dummy_module=dummy_module
                 )
