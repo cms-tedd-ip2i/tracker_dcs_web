@@ -44,13 +44,12 @@ async def upload_data(measurements: str):
 #     return data.mapping.to_dict()
 #
 
+
 @app.post(
     "/mapping",
     status_code=status.HTTP_201_CREATED,
 )
-async def post_mapping(
-    upload_file: UploadFile = File(...)
-):
+async def post_mapping(upload_file: UploadFile = File(...)):
     mapping = upload_file.file.read().decode("utf8")
     logger.debug("set mapping")
     logger.debug(mapping)
