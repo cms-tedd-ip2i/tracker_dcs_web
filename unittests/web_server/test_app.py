@@ -1,3 +1,6 @@
+import mimetypes
+import pprint
+
 import pytest
 
 from fastapi.testclient import TestClient
@@ -5,6 +8,7 @@ from fastapi import status
 from unittests.fixtures import env
 
 from tracker_dcs_web.web_server.data import mapping, measurements
+from tracker_dcs_web.utils.locate import abspath_data
 
 
 @pytest.fixture
@@ -85,28 +89,52 @@ def test_too_many_lines(app_client):
 
 
 def test_mapping_bad(app_client):
-    # not enough lines
-    the_data = "foo"
-    response = app_client.post("/mapping", params={"mapping": the_data})
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    def post(data):
+        response = app_client.post(
+            "/mapping",
+            files={"upload_file": ("foo.txt", data.encode("utf8"), ".txt")},
+        )
+        return response.status_code
 
-    # not a 3-column tsv
-    the_data = "foo\nbar"
-    response = app_client.post("/mapping", params={"mapping": the_data})
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    data = """
+11_4\t15_7\t53
+15_4\t11_5\t41
+"""
+
+    assert post(data) == status.HTTP_201_CREATED
+
+    # missing a column
+    data = """
+11_4\t15_7
+"""
+    assert post(data) == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # last column is an integer
+    data = """
+11_4\t15_7\tfoo
+"""
+    assert post(data) == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_mapping_ok(app_client):
     # 3-column tsv
     # on the first 2 lines, we have 2 pt100 on a dummy module
-    the_data = """
-15_10\t13_4\t42, 28
-15_12\t13_5\t35,45
+    test_mapping = abspath_data("labview/mapping.txt")
+    assert test_mapping.exists()
 
-5_1\t9_4\t0
-5_3\t1_2\t9
-"""
-    response = app_client.post("/mapping", params={"mapping": the_data})
+    with open(test_mapping) as file:
+        response = app_client.post(
+            "/mapping",
+            files={
+                "upload_file": (
+                    test_mapping.name,
+                    file,
+                    mimetypes.guess_type(test_mapping)[0],
+                )
+            },
+        )
     assert response.status_code == status.HTTP_201_CREATED
-    mapping = response.json()
-    assert set(mapping.keys()) == {"42", "28", "35", "45", "0", "9"}
+    result = response.json()
+    channel = result.get("1")
+    assert channel["dummy_module"] == "15_25"
+    assert channel["slot"] == "11_3"
