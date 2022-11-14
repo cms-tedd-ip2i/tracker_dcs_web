@@ -1,4 +1,6 @@
+import json
 import pytest
+
 from .fixtures import env
 
 
@@ -10,4 +12,5 @@ def mqtt(env):
 
 
 def test_connect(mqtt):
+    mqtt.client.publish("/test", json.dumps({"a": 1}))
     assert True
