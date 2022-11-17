@@ -1,8 +1,11 @@
+import json
+
 from fastapi import FastAPI, status, File, UploadFile
 from fastapi.responses import JSONResponse
 import os
 import tracker_dcs_web.web_server.data as data
 from tracker_dcs_web.utils.logger import logger
+from tracker_dcs_web.mqtt import client
 
 app = FastAPI()
 
@@ -16,6 +19,7 @@ async def root():
 
 @app.post("/data", status_code=status.HTTP_201_CREATED)
 async def upload_data(measurements: str):
+    mqtt_topic = os.environ.get("MQTT_TOPIC_DATA", "/labview")
     try:
         data.measurements.set(measurements)
     except ValueError as err:
@@ -26,23 +30,10 @@ async def upload_data(measurements: str):
         )
     records = data.measurements.records()
     if records:
+        client.publish("/labview", json.dumps(records))
         return records
     else:
         return data.measurements.columns()
-
-
-# @app.post("/mapping", status_code=status.HTTP_201_CREATED)
-# async def post_mapping(mapping: str):
-#     try:
-#         data.mapping.set(mapping)
-#     except ValueError as err:
-#         message = str(err)
-#         logger.warning(err)
-#         return JSONResponse(
-#             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=message
-#         )
-#     return data.mapping.to_dict()
-#
 
 
 @app.post(

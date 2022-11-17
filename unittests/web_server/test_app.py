@@ -140,3 +140,35 @@ def test_mapping_ok(app_client):
     channel = result.get("1")
     assert channel["dummy_module"] == "15_25"
     assert channel["slot"] == "11_3"
+
+
+def test_realistic(app_client):
+    test_mapping = abspath_data("labview/mapping.txt")
+    test_header = abspath_data("labview/header.txt")
+    test_data = abspath_data("labview/measure_line.txt")
+
+    with open(test_mapping) as file:
+        response = app_client.post(
+            "/mapping",
+            files={
+                "upload_file": (
+                    test_mapping.name,
+                    file,
+                    mimetypes.guess_type(test_mapping)[0],
+                )
+            },
+        )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    with open(test_header) as file:
+        the_data = file.read()
+        response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_201_CREATED
+
+    with open(test_data) as file:
+        the_data = file.read()
+        response = app_client.post("/data", params={"measurements": the_data})
+    assert response.status_code == status.HTTP_201_CREATED
+    ret = response.json()
+    assert "0 (PS)" in ret
+    assert "Datetime_ns" in ret
