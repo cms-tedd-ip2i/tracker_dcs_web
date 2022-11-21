@@ -124,7 +124,7 @@ def test_mapping_ok(app_client):
     test_mapping = abspath_data("labview/mapping.txt")
     assert test_mapping.exists()
 
-    with open(test_mapping) as file:
+    with open(test_mapping, "rb") as file:
         response = app_client.post(
             "/mapping",
             files={
@@ -147,7 +147,7 @@ def test_realistic(app_client):
     test_header = abspath_data("labview/header.txt")
     test_data = abspath_data("labview/measure_line.txt")
 
-    with open(test_mapping) as file:
+    with open(test_mapping, "rb") as file:
         response = app_client.post(
             "/mapping",
             files={
