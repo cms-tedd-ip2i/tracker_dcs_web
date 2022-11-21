@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/cms-tedd-ip2i/tracker_dcs_web/branch/dev/graph/badge.svg?token=J1O1816LJK)](https://codecov.io/gh/cms-tedd-ip2i/tracker_dcs_web)
+
 # Tracker DCS Web Server 
 
 Input from outside, e.g. LabView

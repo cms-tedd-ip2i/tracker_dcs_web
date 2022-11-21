@@ -1,0 +1,5 @@
+[run]
+omit = *test*.py, *setup.py, *__init__.py*, *_version.py
+
+[report]
+omit = *scripts/*, *alembic/versions*, */utils/alembic.py, */sql/init_db*, *test*.py, *setup.py, *__init__.py*,
