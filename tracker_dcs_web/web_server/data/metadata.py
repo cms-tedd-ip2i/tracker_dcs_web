@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import os
 import pathlib
 import pickle
 from typing import Dict, List
@@ -9,7 +10,8 @@ from tracker_dcs_web.utils.locate import abspath_root
 class Metadata(ABC):
     def __init__(self, pck_name: str, save_file: pathlib.Path = None):
         if save_file is None:
-            save_file = abspath_root() / pck_name
+            storage_dir = pathlib.Path(os.environ.get("STORAGE_DIR", abspath_root()))
+            save_file = storage_dir / pck_name
         self.save_file = save_file
         self._data = self.load()
 

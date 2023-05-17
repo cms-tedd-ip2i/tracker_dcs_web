@@ -19,7 +19,7 @@ async def root():
 
 @app.post("/data", status_code=status.HTTP_201_CREATED)
 async def upload_data(measurements: str):
-    mqtt_topic = os.environ.get("MQTT_TOPIC_DATA", "/labview")
+    logger.info(f"/data {measurements}")
     try:
         data.measurements.set(measurements)
     except ValueError as err:
@@ -30,7 +30,10 @@ async def upload_data(measurements: str):
         )
     records = data.measurements.records()
     if records:
-        client.publish("/labview", json.dumps(records))
+        mqtt_topic = os.environ.get("MQTT_TOPIC_DATA", "/labview")
+        logger.info(f"publishing {records}")
+        client.publish(mqtt_topic, json.dumps(records), qos=2)
+        data.measurements.clear()
         return records
     else:
         return data.measurements.columns()

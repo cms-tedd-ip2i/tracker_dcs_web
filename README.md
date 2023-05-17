@@ -6,11 +6,16 @@ Input from outside, e.g. LabView
 
 ## Developer instructions
 
-Local installation: 
+Environment creation: 
 
 ```
-conda create -n web_server python=3.9
-conda activate web_server
+python -m venv venv
+source venv/bin/activate
+```
+
+Installation: 
+
+```
 pip install --upgrade pip
 pip install -r requirements/local.txt
 pip install -e .  
@@ -18,16 +23,15 @@ pip install -e .
 
 ## Environment variables 
 
-These secrets will be printed out by the server. 
-They are not used for authentication, so set them to whatever you want. 
-
-* `APP_USER`: app user
-* `APP_PASSWORD`: app password
-* `MQTT_HOST`: mosquitto host, e.g. localhost (don't include the port)
+| Variable        | Description     | Mandatory | Default   | 
+|-----------------|-----------------|-----------|-----------| 
+| MQTT_HOST       | mosquitto host  | no        | localhost | 
+| MQTT_PORT       | mosquitto port  | no        | 1883      | 
+| MQTT_TOPIC_DATA | mqtt root topic | no        | /labview  |
 
 ## Docker stack 
 
-To run the unit tests you need an MQTT broker. Start it: 
+To run the unit tests on the web server locally you need an MQTT broker. Start it: 
 
 ```commandline
 cd docker/test_tracker_dcs_web
@@ -69,7 +73,7 @@ See the docker-compose stack, the web_server is already integrated.
 To make a request to the root path: 
 
 ```commandline
-curl curl localhost:8001/
+curl localhost:8001/
 ```
 
 
