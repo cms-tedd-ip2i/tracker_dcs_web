@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import pathlib
 from tracker_dcs_web.utils.locate import abspath_root
@@ -7,7 +8,8 @@ from typing import Dict, List
 
 class Measurements:
     def __init__(self):
-        self.save_file = abspath_root() / "header.csv"
+        storage_dir = pathlib.Path(os.environ.get("STORAGE_DIR", abspath_root()))
+        self.save_file = storage_dir / "header.csv"
         self._header = self.load()
         self._data = None
 
@@ -82,6 +84,10 @@ class Measurements:
             return self._data.to_dict(orient="records")[0]
         else:
             return {}
+
+    def clear(self):
+        """clear data"""
+        self._data = None
 
 
 measurements = Measurements()

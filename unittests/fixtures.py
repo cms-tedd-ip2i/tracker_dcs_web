@@ -5,7 +5,7 @@ import pytest
 def env(monkeypatch):
     variables = {
         "MQTT_HOST": "localhost",
-        "MQTT_PORT": 1884,
+        "MQTT_PORT": 1883,
         "APP_USER": "candan",
         "APP_PASSWORD": "cms",
     }
