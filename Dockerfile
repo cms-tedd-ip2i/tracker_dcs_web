@@ -13,10 +13,6 @@ ARG HOME=/home/$USER
 ARG TO_PATH=$HOME/service
 ARG VIRTUAL_ENV=$TO_PATH/venv
 
-# Create service user
-RUN /usr/sbin/useradd -m -u 5000 $USER
-USER $USER
-
 # Create service directory
 RUN mkdir -p $TO_PATH
 WORKDIR $TO_PATH
@@ -36,10 +32,20 @@ RUN --mount=type=cache,target=$HOME/.cache/pip pip install .
 # Copy service source code
 COPY $FROM_PATH/tracker_dcs_web $TO_PATH/tracker_dcs_web
 
+# service user
+RUN /usr/sbin/useradd -m -u 5000 $USER
+
 # prepare storage dir
-RUN mkdir -p ${TO_PATH}/files
-ENV STORAGE_DIR=/${TO_PATH}/files
+RUN mkdir -p $TO_PATH/files
+ENV STORAGE_DIR=/$TO_PATH/files
+RUN chown -R $USER $STORAGE_DIR
+
+RUN rm -rf /$TO_PATH/.git
+
+# Create service user
+USER $USER
 
 ENV PYTHONPATH="$PWD:$PYTHONPATH"
+
 
 
