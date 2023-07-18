@@ -30,9 +30,7 @@ jobs:
         env
     - name: Install dependencies
       run: |
-        pip install -r requirements/local.txt
-        pip install -e .
-    
+        pip install -e .[local]
     - name: Docker-compose start mqtt
       run: | 
         cd docker/test_tracker_dcs_web
