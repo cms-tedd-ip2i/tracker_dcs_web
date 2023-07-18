@@ -37,7 +37,7 @@ jobs:
         docker-compose up -d 
         cd -
     - name: Run black --check .
-      run: black --check . --exclude _actions
+      run: black --check . --exclude _actions --exclude "tracker_dcs_web/_version.py"
     - name: Test with pytest
       run: |
         cd unittests
