@@ -42,7 +42,7 @@ jobs:
       run: |
         cd unittests
         pip install pytest-cov
-        pytest --cov=../tracker_dcs_web --cov-report=xml
+        pytest --cov=../ --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
