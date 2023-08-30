@@ -1,22 +1,51 @@
-FROM python:3.9
+FROM python:3.10-slim
 
-RUN apt-get update && apt-get -y upgrade
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get -y install git && \
+    rm -rf /var/lib/apt/lists/*
 
-WORKDIR /code
 
-# install dependencies
 
-COPY requirements ./requirements
+ARG FROM_PATH=.
+ARG USER=service-user
+ARG HOME=/home/$USER
+ARG TO_PATH=$HOME/service
+ARG VIRTUAL_ENV=$TO_PATH/venv
+
+# Create service directory
+RUN mkdir -p $TO_PATH
+WORKDIR $TO_PATH
+
+# Create virtual environment
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements/docker.txt
 
-# install this package
+# Copy necessary files
+COPY $FROM_PATH/pyproject.toml pyproject.toml
+COPY $FROM_PATH/.git .git
 
-COPY tracker_dcs_web/ ./tracker_dcs_web
-COPY setup.py ./
-RUN pip install -e .
+RUN mkdir ./tracker_dcs_web
+RUN --mount=type=cache,target=$HOME/.cache/pip pip install .
 
-# create user
+# Copy service source code
+COPY $FROM_PATH/tracker_dcs_web $TO_PATH/tracker_dcs_web
 
-RUN useradd --create-home appuser
-USER appuser
+# service user
+RUN /usr/sbin/useradd -m -u 5000 $USER
+
+# prepare storage dir
+RUN mkdir -p $TO_PATH/files
+ENV STORAGE_DIR=/$TO_PATH/files
+RUN chown -R $USER $STORAGE_DIR
+
+RUN rm -rf /$TO_PATH/.git
+
+# Create service user
+USER $USER
+
+ENV PYTHONPATH="$PWD:$PYTHONPATH"
+
+
+

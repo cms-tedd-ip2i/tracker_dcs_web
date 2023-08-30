@@ -1,0 +1,79 @@
+[project]
+name = "tracker_dcs_web"
+description = "Web server accepting labview data for IP2I CMS tracker DCS"
+dynamic = ["version"]
+authors = [
+    { name = "Colin Bernet", email = "c.bernet@cynapps.ai" },
+]
+maintainers = [
+    { name = "Colin Bernet", email = "c.bernet@cynapps.ai" },
+]
+
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["tracker", "DCS", "labview", "CMS", "IP2I"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+
+dependencies = [
+    "fastapi==0.95.*",
+    "paho-mqtt>=1.5.1, <1.6.0",
+    "pandas>=2.0.3, <2.1.0",
+    "python-multipart>=0.0.6, <0.1",
+    "pyyaml>=6.0.1, <6.1",
+    # "requests",
+    "uvicorn==0.22.*",
+]
+
+[project.optional-dependencies]
+docker = [
+]
+local = [
+    "black[d]==23.3.*",
+    "coverage==7.2.*",
+    "httpx==0.24.*",
+    "pytest==7.3.*",
+    "pytest-asyncio==0.21.*",
+    "pytest-mock==3.10.*",
+    "python-dotenv==1.0.*",
+    "requests>=2.31.0, <2.32"
+]
+
+
+[project.urls]
+repository = "https://github.com/cms-tedd-ip2i/tracker_dcs_web"
+
+[project.scripts]
+dummy_labview = "tracker_dcs_web.scripts.dummy_labview:main"
+
+
+[build-system]
+requires = [
+    "setuptools >= 66.1.1",
+    "wheel",
+    "setuptools-scm[toml] >= 7.1.0",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["tracker_dcs_web"]
+
+[tool.setuptools_scm]
+git_describe_command = "git describe --tags --match 'v[0-9]*'"
+write_to = "tracker_dcs_web/_version.py"
+
+[tool.coverage.run]
+source = ["tracker_dcs_web"]
+
+[tool.black]
+include = '\.pyi?$' # All Python files
+exclude = '''
+/(
+  \.git
+  | build
+  | dist
+  | venv
+  | tracker_dcs_web/_version.py
+)/
+'''

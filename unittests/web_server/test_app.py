@@ -30,7 +30,6 @@ def test_root(app_client):
 
 
 def test_header_bad(app_client):
-
     # bad header
     the_data = "Date\tfoo"
     response = app_client.post("/data", params={"measurements": the_data})

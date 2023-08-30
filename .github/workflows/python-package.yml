@@ -14,7 +14,7 @@ jobs:
     # runs-on: [self-hosted, linux, X64]
     strategy:
       matrix:
-        python-version: [3.9.12]
+        python-version: ["3.10"]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -30,22 +30,19 @@ jobs:
         env
     - name: Install dependencies
       run: |
-        pip install -r requirements/local.txt
-        pip install -e .
-    
+        pip install -e .[local]
     - name: Docker-compose start mqtt
       run: | 
         cd docker/test_tracker_dcs_web
         docker-compose up -d 
         cd -
     - name: Run black --check .
-      run: black --check . --exclude _actions
+      run: black --check . --exclude _actions --exclude "tracker_dcs_web/_version.py"
     - name: Test with pytest
       run: |
         cd unittests
         pip install pytest-cov
         pytest --cov=../ --cov-report=xml
-        ls
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
